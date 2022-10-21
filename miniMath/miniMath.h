@@ -1,7 +1,9 @@
 #pragma once
+#include<iostream>
+
 /*
 	miniMath
-	包含 向量运算、矩阵运算
+	包含 任意维的向量运算、矩阵运算
 
 */
 
@@ -12,7 +14,7 @@ namespace mini {
 		矩阵运算 包含
 		求逆、矩阵乘法
 	*/
-	class Mat
+	struct Mat
 	{
 		int m, n; //m行n列
 		double*_data; 
@@ -22,22 +24,47 @@ namespace mini {
 				_data[i] = 0;
 			}
 		}
+		Mat(const Mat& m1) {
+			m = m1.m;
+			n = m1.n;
+			_data = new double[m * n];
+			for (int i = 0; i < m * n; i++) {
+				_data[i] = m1._data[i];
+			}
+		}
 		
 		~Mat() {
-			delete[]_data;
+			if(_data!=nullptr)delete[]_data;
 		}
-		Mat operator/(const Mat& m);
+
+		Mat& operator=(const Mat& m1) {
+			if (m != m1.m || n != m1.n) {
+				delete[]this->_data;
+				_data = new double[m1.m * m1.n];
+			}
+			m = m1.m;
+			n = m1.n;
+
+			
+			for (int i = 0; i < m * n; i++) {
+				_data[i] = m1._data[i];
+			}
+			return *this;
+		}
+
+		bool isSquare()const { if (m != 0 && m == n)return true; return false; }
+		double& d(int M, int N) { return _data[M * n + N]; };
+		const double d(int M, int N)const { return _data[M * n + N]; }
+		Mat getSubMat(int startM, int startN, int sizeM, int sizeN)const;
+		Mat getSubMat(int I, int J)const; //获得删除第i行第j列而得到的子矩阵
+		Mat operator/(double N);
+		Mat operator*(double N);
+		Mat operator*(const Mat& m1);
 	};
 
-	Mat inverseMat(const Mat& m);
-	Mat adjMat(const Mat& m);
-	double detMat(const Mat& m,int M=0,int N=0);
-	
-
-
-	Mat inverseMat(const Mat& m)
-	{
-
-	}
+	Mat inverseMat(const Mat& m1);
+	Mat adjMat(const Mat& m1);
+	double detMat(const Mat& m1);
+	std::ostream& operator<<(std::ostream& os, const Mat& m1);
 }
 
